@@ -7,14 +7,15 @@ public class App {
     private static final int ROWS = 20;
     private static final int COLUMNS = 20;
     private static final int SCALE = 30;
-    private static final long MAKER_DELAY = 10;
-    private static final long WALKER_DELAY = 60;
+    private static final long MAKER_DELAY = 20;
+    private static final long WALKER_DELAY = 100;
 
-    public static Thread maker(final Canvas c, final MazeMaker m, final long delay) {
+    public static Thread maker(final MazeCanvas c, final MazeMaker m, final long delay) {
         Thread t = new Thread() {
             @Override
             public void run() {
                 while(!m.isFinished()) {
+                    c.clearMaze();
                     c.repaint();
                     try {
                         Thread.sleep(delay);
@@ -22,6 +23,7 @@ public class App {
                         e.printStackTrace();
                     }
                 }
+                c.clearMaze();
                 c.repaint();
             }
         };

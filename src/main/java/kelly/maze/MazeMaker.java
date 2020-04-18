@@ -5,7 +5,7 @@ import java.util.Random;
 
 public class MazeMaker {
     private MazeCellGrid grid;
-    public boolean isFinished;
+    private boolean isFinished;
     private static final long delay = 10;
     private Random random = new Random();
 

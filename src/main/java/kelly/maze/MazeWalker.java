@@ -25,6 +25,10 @@ public class MazeWalker {
         return finished;
     }
 
+    public boolean hasStarted() {
+        return !path.isEmpty();
+    }
+
     public Stack<MazeCell> getPath() {
         return path;
     }
