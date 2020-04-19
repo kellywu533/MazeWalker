@@ -6,11 +6,24 @@ import java.util.Random;
 public class MazeMaker {
     private MazeCellGrid grid;
     private boolean isFinished;
-    private static final long delay = 10;
+    private static final long delay = 2;
     private Random random = new Random();
+    private ArrayList<MazeMakerEventListener> listeners = null;
 
     public MazeMaker(MazeCellGrid grid) {
+        listeners = new ArrayList<>();
         this.grid = grid;
+    }
+
+    public void addListener(MazeMakerEventListener l) {
+        this.listeners.add(l);
+    }
+
+    private void publishEvent() {
+        MazeMakerEvent e = new MazeMakerEvent();
+        for(MazeMakerEventListener l : listeners) {
+            l.update(e);
+        }
     }
 
     public MazeDirection chooseRandomDirection(ArrayList<MazeDirection> directions) {
@@ -29,6 +42,7 @@ public class MazeMaker {
             makePath(cell);
             cell = grid.getCellAdjacentToPath();
         }
+        publishEvent();
         isFinished = true;
     }
 
@@ -44,6 +58,7 @@ public class MazeMaker {
                 break;
             }
             cell = grid.breakWall(cell, direction);
+            publishEvent();
             Thread.sleep(delay);
         } while (cell != null);
     }

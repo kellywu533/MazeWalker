@@ -1,53 +1,12 @@
 package kelly.maze;
 
 import javax.swing.*;
-import java.awt.*;
 
 public class App {
     private static final int ROWS = 20;
     private static final int COLUMNS = 20;
     private static final int SCALE = 30;
-    private static final long MAKER_DELAY = 20;
-    private static final long WALKER_DELAY = 100;
-
-    public static Thread maker(final MazeCanvas c, final MazeMaker m, final long delay) {
-        Thread t = new Thread() {
-            @Override
-            public void run() {
-                while(!m.isFinished()) {
-                    c.clearMaze();
-                    c.repaint();
-                    try {
-                        Thread.sleep(delay);
-                    } catch (InterruptedException e) {
-                        e.printStackTrace();
-                    }
-                }
-                c.clearMaze();
-                c.repaint();
-            }
-        };
-        return t;
-    }
-
-    public static Thread walker(final Canvas c, final MazeWalker w, final long delay) {
-        Runnable r = new Runnable() {
-            @Override
-            public void run() {
-                while(!w.isFinished()) {
-                    c.repaint();
-
-                    try {
-                        Thread.sleep(delay);
-                    } catch (InterruptedException e) {
-                        e.printStackTrace();
-                    }
-                }
-                c.repaint();
-            }
-        };
-        return new Thread(r);
-    }
+    private static final long WALKER_DELAY = 200;
 
     public static void start() throws InterruptedException {
         MazeCellGrid grid = new MazeCellGrid(ROWS, COLUMNS);
@@ -64,13 +23,10 @@ public class App {
         f.pack();
         f.setVisible(true);
 
-        Thread t = maker(canvas, maker, MAKER_DELAY);
-        t.start();
+        maker.addListener(canvas);
         maker.makeMaze();
-        t.join();
 
-        t = walker(canvas, walker, WALKER_DELAY);
-        t.start();
+        walker.addListener(canvas);
         walker.solveFrom(start);
     }
 

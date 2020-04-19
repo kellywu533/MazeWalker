@@ -1,14 +1,19 @@
 package kelly.maze;
 
+import kelly.SoundPlayer;
+
 import java.awt.*;
 import java.awt.image.BufferedImage;
+import java.util.HashMap;
+import java.util.Map;
 import java.util.Stack;
 
-public class MazeCanvas extends Canvas {
+public class MazeCanvas extends Canvas implements MazeMakerEventListener, MazeWalkerEventListener {
     private int scale;
     private MazeCellGrid grid;
     private MazeWalker walker;
-    private BufferedImage walkerHead = null;
+    private Map<MazeWalkerEvent.Type, BufferedImage> walkerHeads = null;
+    private MazeWalkerEvent lastEvent = null;
 
     /**
      * Constructs the maze canvas to be drawn on the scree
@@ -20,6 +25,7 @@ public class MazeCanvas extends Canvas {
         this.scale = scale;
         this.grid = grid;
         this.walker = walker;
+        walkerHeads = new HashMap<>();
     }
 
     /**
@@ -94,18 +100,43 @@ public class MazeCanvas extends Canvas {
      * @return Buffered image of the walker head
      */
     private BufferedImage drawWalkerHeadImage(int offset) {
-        if(walkerHead == null) {
+        MazeWalkerEvent.Type t = lastEvent.getEventType();
+        BufferedImage img = walkerHeads.get(t);
+        if(img == null) {
             int w = scale - (offset * 2);
-            walkerHead = new BufferedImage(w, w, BufferedImage.TYPE_INT_ARGB);
-            Graphics g = walkerHead.getGraphics();
+            img = new BufferedImage(w, w, BufferedImage.TYPE_INT_ARGB);
+            Graphics g = img.getGraphics();
             Graphics2D g2d = (Graphics2D) g;
             g2d.setRenderingHint(RenderingHints.KEY_ANTIALIASING, RenderingHints. VALUE_ANTIALIAS_ON);
             g2d.setRenderingHint(RenderingHints.KEY_STROKE_CONTROL, RenderingHints.VALUE_STROKE_NORMALIZE);
 
-            g.setColor(Color.RED);
+            g.setColor(Color.YELLOW);
             g.fillOval(0, 0, w, w);
+            switch(t) {
+                case WALL:
+                    g.setColor(Color.BLACK);
+                    g.fillOval(6, 6, 2, 2);
+                    g.fillOval(w - 6,  6, 2, 2);
+                    g.setColor(Color.RED);
+                    g.fillOval(10, 10, 6, 6);
+                    break;
+                case FINISH:
+                    g.setColor(Color.BLACK);
+                    g.drawString("x", 4, 8);
+                    g.drawString("x", w - 8, 8);
+                    g.drawArc(10, 12, 6, 4, 0, 180);
+                    break;
+                default:
+                    g.setColor(Color.BLACK);
+                    g.fillOval(6, 6, 4, 4);
+                    g.fillOval(w - 6, 6, 4, 4);
+                    g.setColor(Color.RED);
+                    g.fillRect(10, 12, 6, 1);
+            }
+
+            walkerHeads.put(t, img);
         }
-        return walkerHead;
+        return img;
     }
 
     /**
@@ -178,6 +209,32 @@ public class MazeCanvas extends Canvas {
         if(walker.hasStarted()) {
             drawSolution(g);
             drawWalkerHead(g);
+        }
+    }
+
+    @Override
+    public void update(MazeMakerEvent e) {
+        this.clearMaze();
+        this.repaint();
+    }
+
+    @Override
+    public void update(MazeWalkerEvent e) {
+        lastEvent = e;
+        this.repaint();
+        switch(e.getEventType()) {
+            case FORWARD:
+                SoundPlayer.playSound(SoundPlayer.Type.MOVE);
+                break;
+            case BACKWARD:
+                SoundPlayer.playSound(SoundPlayer.Type.MOVEBACK);
+                break;
+            case WALL:
+                SoundPlayer.playSound(SoundPlayer.Type.HITWALL);
+                break;
+            case FINISH:
+                SoundPlayer.playSound(SoundPlayer.Type.FINISH);
+                break;
         }
     }
 }
