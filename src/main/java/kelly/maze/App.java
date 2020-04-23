@@ -6,7 +6,7 @@ public class App {
     private static final int ROWS = 20;
     private static final int COLUMNS = 20;
     private static final int SCALE = 30;
-    private static final long WALKER_DELAY = 200;
+    private static final long WALKER_DELAY = 100;
 
     public static void start() throws InterruptedException {
         MazeCellGrid grid = new MazeCellGrid(ROWS, COLUMNS);

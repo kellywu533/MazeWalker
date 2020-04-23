@@ -1,13 +1,13 @@
 package kelly.maze;
 
-import java.util.ArrayList;
-import java.util.Random;
+import java.util.*;
 
 public class MazeCellGrid {
     private int rows;
     private int columns;
     private Random random = new Random();
     private MazeCell[] grid;
+    Set<MazeCell> freeCells = new HashSet<>();
 
     public MazeCellGrid(int rows, int columns) {
         this.rows = rows;
@@ -16,7 +16,9 @@ public class MazeCellGrid {
         grid = new MazeCell[cells];
         for(int r=0; r<rows; r++) {
             for(int c=0; c<columns; c++) {
-                grid[translateToIndex(r, c)] = new MazeCell(r, c);
+                MazeCell cell = new MazeCell(r, c);
+                grid[translateToIndex(r, c)] = cell;
+                freeCells.add(cell);
             }
         }
     }
@@ -34,8 +36,14 @@ public class MazeCellGrid {
     }
 
     public MazeCell getStart() {
-        MazeCell cell = grid[random.nextInt(grid.length)];
-        return cell;
+        int num = random.nextInt(freeCells.size());
+        for (MazeCell cell : freeCells) {
+            if (num-- < 1) {
+                return cell;
+            }
+        }
+        // should never get here
+        return null;
     }
 
     public MazeCell[] getCells() {
@@ -82,8 +90,10 @@ public class MazeCellGrid {
         }
 
         cell.breakWall(direction);
+        freeCells.remove(cell);
         assert direction.opposite() != null;
         neighbor.breakWall(direction.opposite());
+        freeCells.remove(neighbor);
         return neighbor;
     }
 
@@ -99,7 +109,7 @@ public class MazeCellGrid {
     }
 
     public MazeCell getCellAdjacentToPath() {
-        for(MazeCell c : grid) {
+        for(MazeCell c : freeCells) {
             if(!c.isConnected()) {
                 ArrayList<MazeDirection> directions = goodDirections(c, true);
                 if(!directions.isEmpty()) {

@@ -21,6 +21,24 @@ public class MazeCell {
         return column;
     }
 
+    @Override
+    public boolean equals(Object o) {
+        if (this == o) return true;
+        if (o == null || getClass() != o.getClass()) return false;
+
+        MazeCell mazeCell = (MazeCell) o;
+
+        if (row != mazeCell.row) return false;
+        return column == mazeCell.column;
+    }
+
+    @Override
+    public int hashCode() {
+        int result = column;
+        result = 31 * result + row;
+        return result;
+    }
+
     public boolean isConnected() {
         for(boolean isOpen : walls) {
             if (isOpen) {
