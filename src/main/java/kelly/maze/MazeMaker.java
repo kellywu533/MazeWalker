@@ -1,14 +1,12 @@
 package kelly.maze;
 
 import java.util.ArrayList;
-import java.util.HashSet;
 import java.util.Random;
-import java.util.Set;
 
 public class MazeMaker {
     private MazeCellGrid grid;
     private boolean isFinished;
-    private static final long delay = 10;
+    private static final long delay = 100;
     private Random random = new Random();
     private ArrayList<MazeMakerEventListener> listeners = null;
 

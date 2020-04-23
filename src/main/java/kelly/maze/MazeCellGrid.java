@@ -3,9 +3,10 @@ package kelly.maze;
 import java.util.*;
 
 public class MazeCellGrid {
+    private static final Random random = new Random();
+
     private int rows;
     private int columns;
-    private Random random = new Random();
     private MazeCell[] grid;
     Set<MazeCell> freeCells = new HashSet<>();
 
@@ -35,15 +36,22 @@ public class MazeCellGrid {
         return columns;
     }
 
-    public MazeCell getStart() {
-        int num = random.nextInt(freeCells.size());
-        for (MazeCell cell : freeCells) {
+    public static <T> T randomElementFrom(Collection<T> collection) {
+        if(collection == null || collection.isEmpty()) {
+            return null;
+        }
+        int num = random.nextInt(collection.size());
+        for (T t : collection) {
             if (num-- < 1) {
-                return cell;
+                return t;
             }
         }
         // should never get here
         return null;
+    }
+
+    public MazeCell getStart() {
+        return randomElementFrom(freeCells);
     }
 
     public MazeCell[] getCells() {
@@ -109,16 +117,21 @@ public class MazeCellGrid {
     }
 
     public MazeCell getCellAdjacentToPath() {
+        ArrayList<MazeCell> availableCells = new ArrayList<>();
         for(MazeCell c : freeCells) {
             if(!c.isConnected()) {
-                ArrayList<MazeDirection> directions = goodDirections(c, true);
-                if(!directions.isEmpty()) {
-                    MazeDirection direction = directions.get(random.nextInt(directions.size()));
-                    breakWall(c, direction);
-                    return c;
+                if(!goodDirections(c, true).isEmpty()) {
+                    availableCells.add(c);
                 }
             }
         }
-        return null;
+        if(availableCells.isEmpty()) {
+            return null;
+        }
+        MazeCell chosenOne = randomElementFrom(availableCells);
+        ArrayList<MazeDirection> directions = goodDirections(chosenOne, true);
+        MazeDirection direction = randomElementFrom(directions);
+        breakWall(chosenOne, direction);
+        return chosenOne;
     }
 }
