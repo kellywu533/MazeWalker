@@ -8,8 +8,15 @@ import java.nio.file.Files;
 import java.nio.file.Path;
 import java.nio.file.Paths;
 
+/**
+ *Sound player to play sounds according to occurrences of the maze walker
+ */
 public class SoundPlayer {
     private static final String AUDIO_DIR = "/System/Library/Sounds/";
+
+    /**
+     * Type of moves and their corresponding sounds
+     */
     public enum Type {
         MOVEBACK("Pop.aiff")
         , HITWALL("Tink.aiff")
@@ -27,6 +34,10 @@ public class SoundPlayer {
             }
         }
 
+        /**
+         *
+         * @return
+         */
         public InputStream soundDataInputStream() {
             if(soundData == null) {
                 return null;
@@ -35,6 +46,10 @@ public class SoundPlayer {
         }
     }
 
+    /**
+     *Plays the sound corresponding to each maze walker movement type
+     * @param is
+     */
     public static void playSound(InputStream is) {
         try (AudioInputStream ais = AudioSystem.getAudioInputStream(is)) {
             final Clip clip = AudioSystem.getClip();
@@ -66,6 +81,10 @@ public class SoundPlayer {
         }
     }
 
+    /**
+     *
+     * @param t
+     */
     public static void playSound(Type t) {
         if(t.soundDataInputStream() == null) {
             System.out.println("no sound " + t);
@@ -74,6 +93,11 @@ public class SoundPlayer {
         playSound(t.soundDataInputStream());
     }
 
+    /**
+     *
+     * @param args
+     * @throws InterruptedException
+     */
     public static void main(String[] args) throws InterruptedException {
         for(int i=0; i<10; i++) {
             System.out.println(i);

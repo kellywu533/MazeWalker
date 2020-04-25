@@ -3,22 +3,35 @@ package kelly.maze;
 import java.util.ArrayList;
 import java.util.Random;
 
+/**
+ *Builds the maze
+ */
 public class MazeMaker {
     private MazeCellGrid grid;
-    private boolean isFinished;
-    private static final long delay = 100;
+    private static final long delay = 10;
     private Random random = new Random();
     private ArrayList<MazeMakerEventListener> listeners = null;
 
+    /**
+     *Constucts a maze maker that creates a new array list of listeners
+     * @param grid Grid where the maze is to be created
+     */
     public MazeMaker(MazeCellGrid grid) {
         listeners = new ArrayList<>();
         this.grid = grid;
     }
 
+    /**
+     *Adds a listener to the array list of maze maker listeners
+     * @param l Maze maker event listener added to the list of listeners
+     */
     public void addListener(MazeMakerEventListener l) {
         this.listeners.add(l);
     }
 
+    /**
+     *Publishes a new event to each of the maze maker event listeners
+     */
     private void publishEvent() {
         MazeMakerEvent e = new MazeMakerEvent();
         for(MazeMakerEventListener l : listeners) {
@@ -26,6 +39,11 @@ public class MazeMaker {
         }
     }
 
+    /**
+     *Chooses a random direction given an array list of directions
+     * @param directions Directions of which to be chosen from
+     * @return Random maze direction from the list of directions
+     */
     public MazeDirection chooseRandomDirection(ArrayList<MazeDirection> directions) {
         if(directions.isEmpty()) {
             return null;
@@ -34,6 +52,10 @@ public class MazeMaker {
         return directions.get(random.nextInt(size));
     }
 
+    /**
+     *Makes the maze
+     * @throws InterruptedException
+     */
     public void makeMaze() throws InterruptedException {
         MazeCell cell = grid.getStart();
         makePath(cell);
@@ -43,13 +65,13 @@ public class MazeMaker {
             cell = grid.getCellAdjacentToPath();
         }
         publishEvent();
-        isFinished = true;
     }
 
-    public boolean isFinished() {
-        return isFinished;
-    }
-
+    /**
+     *Makes a path in the maze starting from a given cell
+     * @param cell Cell to start the path from
+     * @throws InterruptedException
+     */
     private void makePath(MazeCell cell) throws InterruptedException {
         do {
             ArrayList<MazeDirection> directions = grid.goodDirections(cell, false);

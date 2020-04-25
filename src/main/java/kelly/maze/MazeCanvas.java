@@ -8,6 +8,9 @@ import java.util.HashMap;
 import java.util.Map;
 import java.util.Stack;
 
+/**
+ *Draws the maze maker and maze walker
+ */
 public class MazeCanvas extends Canvas implements MazeMakerEventListener, MazeWalkerEventListener {
     private int scale;
     private MazeCellGrid grid;
@@ -212,12 +215,20 @@ public class MazeCanvas extends Canvas implements MazeMakerEventListener, MazeWa
         }
     }
 
+    /**
+     *Overrides the update method to clear the maze before repainting
+     * @param e MazeMakerEvent event
+     */
     @Override
     public void update(MazeMakerEvent e) {
         this.clearMaze();
         this.repaint();
     }
 
+    /**
+     *Overrides the update method according to the MazeWalkerEvent to update and play the corresponding sound
+     * @param e MazeWalkerEvent event
+     */
     @Override
     public void update(MazeWalkerEvent e) {
         lastEvent = e;

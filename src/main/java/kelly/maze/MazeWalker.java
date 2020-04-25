@@ -2,28 +2,48 @@ package kelly.maze;
 
 import java.util.*;
 
+/**
+ *Walker that solves the maze
+ */
 public class MazeWalker {
     private MazeCell finish;
     private MazeCellGrid grid;
     private Stack<MazeCell> path;
     private HashSet<MazeCell> visitedCells;
-    private boolean finished = false;
     private long delay;
-    private Set<MazeWalkerEventListener> listeners = null;
+    private Set<MazeWalkerEventListener> listeners;
 
+    /**
+     *Constructs the walker in the given grid from (0, 0) to the finishing cell
+     * @param grid Grid where the walker is to solve the maze
+     * @param finish Finishing cell where the walker ends its path
+     * @param delay Delay to make the walker's movements visible
+     */
     public MazeWalker(MazeCellGrid grid, MazeCell finish, long delay) {
         this.grid = grid;
         this.finish = finish;
-        path = new Stack<>();
-        visitedCells = new HashSet<>();
         this.delay = delay;
         listeners = new HashSet<>();
+        reset();
     }
 
+    public void reset() {
+        path = new Stack<>();
+        visitedCells = new HashSet<>();
+    }
+
+    /**
+     *Adds a listener to the set of maze walker event listeners
+     * @param l Maze walker event listener
+     */
     public void addListener(MazeWalkerEventListener l) {
         listeners.add(l);
     }
 
+    /**
+     *Publishes maze walker events to each of the maze walker event listeners in the set
+     * @param t Type of event published
+     */
     private void publishEvent(MazeWalkerEvent.Type t) {
         MazeWalkerEvent e = new MazeWalkerEvent(t);
         for(MazeWalkerEventListener l : listeners) {
@@ -31,17 +51,17 @@ public class MazeWalker {
         }
     }
 
-    public boolean isFinished() {
-        return finished;
-    }
-
+    /**
+     *Checks whether the walker has started solving the maze
+     * @return Boolean whether the walker has started
+     */
     public boolean hasStarted() {
         return !path.isEmpty();
     }
 
     /**
-     *
-     * @return
+     *Gets the path of the walker
+     * @return Stack of maze cells of the walker's path
      */
     public Stack<MazeCell> getPath() {
         return path;
