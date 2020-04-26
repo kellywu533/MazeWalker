@@ -21,14 +21,16 @@ public class MazeCanvas extends Canvas implements MazeMakerEventListener, MazeWa
     /**
      * Constructs the maze canvas to be drawn on the scree
      * @param grid The grid where the maze is to be constructed
-     * @param walker The solution walker of the maze
      * @param scale The scale or size of each unit of the grid
      */
-    public MazeCanvas(MazeCellGrid grid, MazeWalker walker, int scale) {
+    public MazeCanvas(MazeCellGrid grid, int scale) {
         this.scale = scale;
         this.grid = grid;
-        this.walker = walker;
         walkerHeads = new HashMap<>();
+    }
+
+    public void setWalker(MazeWalker walker) {
+        this.walker = walker;
     }
 
     /**
@@ -198,6 +200,13 @@ public class MazeCanvas extends Canvas implements MazeMakerEventListener, MazeWa
         }
     }
 
+    private void drawStringAtCell(Graphics g, MazeCell cell, String text) {
+        int fontSize = scale/2;
+        Font font = new Font(Font.SANS_SERIF, Font.BOLD, fontSize);
+        g.setFont(font);
+        g.drawString(text, cell.getColumn()*scale, cell.getRow()*scale + scale*3/4);
+    }
+
     /**
      * Overrides the paint method to draw the maze and the walker
      */
@@ -209,9 +218,11 @@ public class MazeCanvas extends Canvas implements MazeMakerEventListener, MazeWa
         }
         g.drawImage(maze, 0, 0, this);
 
-        if(walker.hasStarted()) {
+        if(walker != null && walker.hasStarted()) {
             drawSolution(g);
             drawWalkerHead(g);
+            drawStringAtCell(g, walker.getStartCell(), "start");
+            drawStringAtCell(g, walker.getEndCell(), "end");
         }
     }
 

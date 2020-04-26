@@ -6,15 +6,18 @@ public class App {
     private static final int ROWS = 20;
     private static final int COLUMNS = 20;
     private static final int SCALE = 30;
-    private static final long WALKER_DELAY = 10;
+    private static final long WALKER_DELAY = 50;
 
-    public static void start() throws InterruptedException {
-        MazeCellGrid grid = new MazeCellGrid(ROWS, COLUMNS);
-        MazeMaker maker = new MazeMaker(grid);
-        MazeCell start = grid.cellAt(0,0);
-        MazeCell end = grid.cellAt(ROWS - 1, COLUMNS - 1);
-        MazeWalker walker = new MazeWalker(grid, end, WALKER_DELAY);
-        MazeCanvas canvas = new MazeCanvas(grid, walker, SCALE);
+    private MazeCanvas canvas;
+    private MazeCellGrid grid;
+    private MazeCell start;
+    private MazeCell end;
+    private MazeMaker maker;
+    private MazeWalker walker;
+
+    public void init() {
+        grid = new MazeCellGrid(ROWS, COLUMNS);
+        canvas = new MazeCanvas(grid, SCALE);
         JFrame f = new JFrame();
         f.setDefaultCloseOperation(WindowConstants.EXIT_ON_CLOSE);
         f.setResizable(false);
@@ -23,16 +26,28 @@ public class App {
         f.pack();
         f.setVisible(true);
 
-        maker.addListener(canvas);
-
-        maker.makeMaze();
-        walker.addListener(canvas);
-        walker.solveFrom(start);
     }
 
+    public void start() throws InterruptedException{
+        grid.reset();
+        maker = new MazeMaker(grid);
+        maker.addListener(canvas);
+        start = grid.cellAt((int) (Math.random() * ROWS), (int) (Math.random() * COLUMNS));
+        end = grid.cellAt((int) (Math.random() * ROWS), (int) (Math.random() * COLUMNS));
+        walker = new MazeWalker(grid, start, end, WALKER_DELAY);
+        walker.addListener(canvas);
+        canvas.setWalker(walker);
 
+        maker.makeMaze();
+        walker.solve();
+    }
 
     public static void main(String[] args) throws InterruptedException {
-        start();
+        App app = new App();
+        app.init();
+        while(true) {
+            app.start();
+            Thread.sleep(1000);
+        }
     }
 }

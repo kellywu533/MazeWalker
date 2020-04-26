@@ -6,7 +6,8 @@ import java.util.*;
  *Walker that solves the maze
  */
 public class MazeWalker {
-    private MazeCell finish;
+    private MazeCell endCell;
+    private MazeCell startCell;
     private MazeCellGrid grid;
     private Stack<MazeCell> path;
     private HashSet<MazeCell> visitedCells;
@@ -16,20 +17,25 @@ public class MazeWalker {
     /**
      *Constructs the walker in the given grid from (0, 0) to the finishing cell
      * @param grid Grid where the walker is to solve the maze
-     * @param finish Finishing cell where the walker ends its path
+     * @param endCell Finishing cell where the walker ends its path
      * @param delay Delay to make the walker's movements visible
      */
-    public MazeWalker(MazeCellGrid grid, MazeCell finish, long delay) {
+    public MazeWalker(MazeCellGrid grid, MazeCell startCell, MazeCell endCell, long delay) {
         this.grid = grid;
-        this.finish = finish;
+        this.startCell = startCell;
+        this.endCell = endCell;
         this.delay = delay;
         listeners = new HashSet<>();
-        reset();
-    }
-
-    public void reset() {
         path = new Stack<>();
         visitedCells = new HashSet<>();
+    }
+
+    public MazeCell getEndCell() {
+        return endCell;
+    }
+
+    public MazeCell getStartCell() {
+        return startCell;
     }
 
     /**
@@ -95,6 +101,10 @@ public class MazeWalker {
         return result;
     }
 
+    public boolean solve() throws InterruptedException {
+        return solveFrom(startCell);
+    }
+
     /**
      * Solves the maze from the given cell
      * @param cell The starting cell to solve from
@@ -108,7 +118,7 @@ public class MazeWalker {
         publishEvent(MazeWalkerEvent.Type.FORWARD);
         Thread.sleep(delay);
 
-        if(cell.equals(finish)) {
+        if(cell.equals(endCell)) {
             publishEvent(MazeWalkerEvent.Type.FINISH);
             return true;
         }
