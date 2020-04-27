@@ -62,7 +62,7 @@ public class MazeWalker {
      * @return Boolean whether the walker has started
      */
     public boolean hasStarted() {
-        return !path.isEmpty();
+        return path != null && !path.isEmpty();
     }
 
     /**

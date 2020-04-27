@@ -2,6 +2,7 @@ package kelly.maze;
 
 import kelly.SoundPlayer;
 
+import javax.swing.*;
 import java.awt.*;
 import java.awt.image.BufferedImage;
 import java.util.HashMap;
@@ -11,7 +12,7 @@ import java.util.Stack;
 /**
  *Draws the maze maker and maze walker
  */
-public class MazeCanvas extends Canvas implements MazeMakerEventListener, MazeWalkerEventListener {
+public class MazePane extends JPanel implements MazeMakerEventListener, MazeWalkerEventListener {
     private int scale;
     private MazeCellGrid grid;
     private MazeWalker walker;
@@ -23,7 +24,7 @@ public class MazeCanvas extends Canvas implements MazeMakerEventListener, MazeWa
      * @param grid The grid where the maze is to be constructed
      * @param scale The scale or size of each unit of the grid
      */
-    public MazeCanvas(MazeCellGrid grid, int scale) {
+    public MazePane(MazeCellGrid grid, int scale) {
         this.scale = scale;
         this.grid = grid;
         walkerHeads = new HashMap<>();
@@ -163,11 +164,13 @@ public class MazeCanvas extends Canvas implements MazeMakerEventListener, MazeWa
     private BufferedImage drawMaze() {
         int width = scale * grid.getColumns();
         int height = scale * grid.getRows();
-        BufferedImage buffer = new BufferedImage(width, height, BufferedImage.TYPE_INT_ARGB);
+        BufferedImage buffer = new BufferedImage(width, height, BufferedImage.TYPE_INT_RGB);
         Graphics g = buffer.getGraphics();
         Graphics2D g2d = (Graphics2D) g;
         g2d.setRenderingHint(RenderingHints.KEY_ANTIALIASING, RenderingHints. VALUE_ANTIALIAS_ON);
         g2d.setRenderingHint(RenderingHints.KEY_STROKE_CONTROL, RenderingHints.VALUE_STROKE_NORMALIZE);
+        g.setColor(getBackground());
+        g.fillRect(0, 0, width, height);
 
         g.setColor(Color.BLACK);
 
@@ -194,7 +197,9 @@ public class MazeCanvas extends Canvas implements MazeMakerEventListener, MazeWa
     private void drawSolution(Graphics g) {
         Stack<MazeCell> path = walker.getPath();
 
-        g.setColor(Color.BLUE);
+        Graphics2D g2d = (Graphics2D)g;
+        g2d.setStroke(new BasicStroke(scale * 5/32));
+        g.setColor(Color.CYAN);
         for(int i=0; i<path.size() - 1; i++) {
             drawMazePath(g, path.get(i), path.get(i + 1));
         }
@@ -220,9 +225,11 @@ public class MazeCanvas extends Canvas implements MazeMakerEventListener, MazeWa
 
         if(walker != null && walker.hasStarted()) {
             drawSolution(g);
-            drawWalkerHead(g);
+            g.setColor(Color.BLUE);
             drawStringAtCell(g, walker.getStartCell(), "start");
+            g.setColor(Color.RED);
             drawStringAtCell(g, walker.getEndCell(), "end");
+            drawWalkerHead(g);
         }
     }
 
@@ -233,7 +240,7 @@ public class MazeCanvas extends Canvas implements MazeMakerEventListener, MazeWa
     @Override
     public void update(MazeMakerEvent e) {
         this.clearMaze();
-        this.repaint();
+        repaint();
     }
 
     /**
@@ -243,7 +250,8 @@ public class MazeCanvas extends Canvas implements MazeMakerEventListener, MazeWa
     @Override
     public void update(MazeWalkerEvent e) {
         lastEvent = e;
-        this.repaint();
+//        repaint();
+        update(getGraphics());
         switch(e.getEventType()) {
             case FORWARD:
                 SoundPlayer.playSound(SoundPlayer.Type.MOVE);

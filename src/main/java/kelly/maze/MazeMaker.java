@@ -8,9 +8,9 @@ import java.util.Random;
  */
 public class MazeMaker {
     private MazeCellGrid grid;
-    private static final long delay = 10;
+    private static final long delay = 5;
     private Random random = new Random();
-    private ArrayList<MazeMakerEventListener> listeners = null;
+    private ArrayList<MazeMakerEventListener> listeners;
 
     /**
      *Constucts a maze maker that creates a new array list of listeners
