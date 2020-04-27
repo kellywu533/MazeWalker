@@ -3,10 +3,10 @@ package kelly.maze;
 import javax.swing.*;
 
 public class App {
-    private static final int ROWS = 20;
-    private static final int COLUMNS = 20;
+    private static final int ROWS = 10;
+    private static final int COLUMNS = 15;
     private static final int SCALE = 30;
-    private static final long WALKER_DELAY = 50;
+    private static final long WALKER_DELAY = 100;
 
     private MazeCanvas canvas;
     private MazeCellGrid grid;
